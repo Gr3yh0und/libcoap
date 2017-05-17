@@ -22,6 +22,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <signal.h>
 
 #include "coap.h"
 #include "coap_dtls.h"
@@ -1070,6 +1071,14 @@ get_context(const char *node, const char *port, int secure) {
   return ctx;
 }
 
+static volatile int keepRunning = 1;
+
+void intHandler(int);
+void intHandler(int dummy) {
+    keepRunning = 0;
+    (void) dummy;
+}
+
 int
 main(int argc, char **argv) {
   coap_context_t  *ctx = NULL;
@@ -1087,6 +1096,8 @@ main(int argc, char **argv) {
   coap_tid_t tid = COAP_INVALID_TID;
   unsigned char user[MAX_USER], key[MAX_KEY];
   ssize_t user_length = 0, key_length = 0;
+
+  signal(SIGINT, intHandler);
 
   while ((opt = getopt(argc, argv, "Na:b:e:f:g:k:m:p:s:t:o:v:A:B:O:P:T:u:")) != -1) {
     switch (opt) {
