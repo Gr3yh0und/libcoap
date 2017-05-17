@@ -1071,8 +1071,6 @@ get_context(const char *node, const char *port, int secure) {
   return ctx;
 }
 
-static volatile int keepRunning = 1;
-
 void intHandler(int);
 void intHandler(int dummy) {
     keepRunning = 0;
